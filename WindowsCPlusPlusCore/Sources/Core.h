@@ -552,9 +552,15 @@ namespace Core
 		};
 
 		Subset(__int64 const capacity) : _storage(capacity), _chainStartOffsets(new __int64[capacity]), _freeElementOffset(-0x1I64), _usedElementCount(0x0I64), _count(0x0I64) { }
-		~Subset() { delete _chainStartOffsets; }
+		~Subset()
+		{
+			delete _chainStartOffsets;
+		}
 
-		__int64 GetCount() const { return _count; }
+		__int64 GetCount() const
+		{
+			return _count;
+		}
 		bool TryGetAddress(T const value, __int64& address) const
 		{
 			for (__int64 elementOffset = _chainStartOffsets[GetSimplifiedValue(value) % _storage.GetCapacity()] - 0x1I64; elementOffset != -0x1I64; elementOffset = _storage[elementOffset]._nextElementOffset)
@@ -574,7 +580,10 @@ namespace Core
 			value = _storage[address]._value;
 			return true;
 		}
-		Enumerator GetEnumerator() const { return Enumerator(*this); }
+		Enumerator GetEnumerator() const
+		{
+			return Enumerator(*this);
+		}
 		bool TryAdd(T const value, __int64& address)
 		{
 			if (_count++ == _integerMaxUnsigned)
@@ -759,9 +768,15 @@ namespace Core
 		};
 
 		Surjection(__int64 const capacity) : _storage(capacity), _chainStartOffsets(new __int64[capacity]), _freeElementOffset(-0x1I64), _usedElementCount(0x0I64), _count(0x0I64) { }
-		~Surjection() { delete _chainStartOffsets; }
+		~Surjection()
+		{
+			delete _chainStartOffsets;
+		}
 
-		__int64 GetCount() const { return _count; }
+		__int64 GetCount() const
+		{
+			return _count;
+		}
 		bool TryGetAddress(TInput const input, __int64& address) const
 		{
 			for (__int64 elementOffset = _chainStartOffsets[GetSimplifiedValue(input) % _storage.GetCapacity()] - 0x1I64; elementOffset != -0x1I64; elementOffset = _storage[elementOffset]._nextElementOffset)
@@ -773,7 +788,10 @@ namespace Core
 			}
 			return false;
 		}
-		bool ContainsAt(__int64 const address) const { return address >= 0x0I64 && address < _usedElementCount&& _storage[address]._simplifiedInput != -0x1I64; }
+		bool ContainsAt(__int64 const address) const
+		{
+			return address >= 0x0I64 && address < _usedElementCount&& _storage[address]._simplifiedInput != -0x1I64;
+		}
 		bool TryGetAt(__int64 const address, Relation<TInput, TOutput>& relation) const
 		{
 			if (address < 0x0I64 || address >= _usedElementCount || _storage[address]._simplifiedInput == -0x1I64)
@@ -781,7 +799,10 @@ namespace Core
 			relation = _storage[address]._relation;
 			return true;
 		}
-		Enumerator GetEnumerator() const { return Enumerator(*this); }
+		Enumerator GetEnumerator() const
+		{
+			return Enumerator(*this);
+		}
 		bool TryAdd(Relation<TInput, TOutput> const relation, __int64& address)
 		{
 			if (_count++ == _integerMaxUnsigned)
