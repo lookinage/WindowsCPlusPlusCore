@@ -5,11 +5,11 @@
 
 namespace Core
 {
-	__int64 constexpr IntegerMin = 0x8000000000000000I64;
-	__int64 constexpr IntegerMaxSigned = 0x7FFFFFFFFFFFFFFFI64;
-	__int64 constexpr IntegerMaxUnsigned = 0xFFFFFFFFFFFFFFFFI64;
-	__int64 constexpr IntegerZero = 0x0I64;
-	__int64 constexpr IntegerOne = 0x1I64;
+	__int64 constexpr _integerMin = 0x8000000000000000I64;
+	__int64 constexpr _integerMaxSigned = 0x7FFFFFFFFFFFFFFFI64;
+	__int64 constexpr _integerMaxUnsigned = 0xFFFFFFFFFFFFFFFFI64;
+	__int64 constexpr _0 = 0x0I64;
+	__int64 constexpr _1 = 0x1I64;
 
 	template<typename T>
 	__int64 GetSimplifiedValue(T const& reference)
@@ -20,11 +20,11 @@ namespace Core
 		sizes.quot *= sizeof(__int64);
 		for (__int64 offset = sizeof(__int64); offset != sizes.quot; offset += sizeof(__int64))
 			result ^= *(__int64*)(pointer + offset);
-		if (sizes.rem == IntegerZero)
+		if (sizes.rem == _0)
 			return result;
 		if (sizes.rem == sizeof(__int32) + sizeof(__int16) + sizeof(__int8))
 		{
-			pointer += sizes.quot - IntegerOne;
+			pointer += sizes.quot - _1;
 			*(__int32*)&result ^= *(__int32*)pointer;
 			*(__int16*)((__int8*)&result + sizeof(__int32)) ^= *(__int16*)(pointer + sizeof(__int32));
 			*(__int8*)((__int8*)&result + sizeof(__int32) + sizeof(__int16)) ^= *(__int8*)(pointer + sizeof(__int32) + sizeof(__int16));
@@ -32,38 +32,38 @@ namespace Core
 		}
 		if (sizes.rem == sizeof(__int32) + sizeof(__int16))
 		{
-			pointer += sizes.quot - IntegerOne;
+			pointer += sizes.quot - _1;
 			*(__int32*)&result ^= *(__int32*)pointer;
 			*(__int16*)((__int8*)&result + sizeof(__int32)) ^= *(__int16*)(pointer + sizeof(__int32));
 			return result;
 		}
 		if (sizes.rem == sizeof(__int32) + sizeof(__int8))
 		{
-			pointer += sizes.quot - IntegerOne;
+			pointer += sizes.quot - _1;
 			*(__int32*)&result ^= *(__int32*)pointer;
 			*(__int8*)((__int8*)&result + sizeof(__int32)) ^= *(__int8*)(pointer + sizeof(__int32));
 			return result;
 		}
 		if (sizes.rem == sizeof(__int32))
 		{
-			*(__int32*)&result ^= *(__int32*)(pointer + sizes.quot - IntegerOne);
+			*(__int32*)&result ^= *(__int32*)(pointer + sizes.quot - _1);
 			return result;
 		}
 		if (sizes.rem == sizeof(__int16) + sizeof(__int8))
 		{
-			pointer += sizes.quot - IntegerOne;
+			pointer += sizes.quot - _1;
 			*(__int16*)&result ^= *(__int16*)pointer;
 			*(__int8*)((__int8*)&result + sizeof(__int16)) ^= *(__int8*)(pointer + sizeof(__int16));
 			return result;
 		}
 		if (sizes.rem == sizeof(__int16))
 		{
-			*(__int16*)&result ^= *(__int16*)(pointer + sizes.quot - IntegerOne);
+			*(__int16*)&result ^= *(__int16*)(pointer + sizes.quot - _1);
 			return result;
 		}
 		if (sizes.rem == sizeof(__int8))
 		{
-			*(__int8*)&result ^= *(__int8*)(pointer + sizes.quot - IntegerOne);
+			*(__int8*)&result ^= *(__int8*)(pointer + sizes.quot - _1);
 			return result;
 		}
 	}
@@ -91,12 +91,12 @@ namespace Core
 	template<typename T, __int64 Capacity>
 	bool operator==(StaticStorage<T, Capacity> const& left, StaticStorage<T, Capacity> const& right)
 	{
-		return memcmp(&left, &right, sizeof(T) * Capacity) == IntegerZero;
+		return memcmp(&left, &right, sizeof(T) * Capacity) == 0x0I32;
 	};
 	template<typename T, __int64 Capacity>
 	bool operator!=(StaticStorage<T, Capacity> const& left, StaticStorage<T, Capacity> const& right)
 	{
-		return memcmp(&left, &right, sizeof(T) * Capacity) != IntegerZero;
+		return memcmp(&left, &right, sizeof(T) * Capacity) != 0x0I32;
 	};
 
 	template<typename T>
@@ -209,7 +209,7 @@ namespace Core
 			}
 		};
 
-		explicit StandingStack(__int64 const capacity) : _storage(capacity), _count(IntegerZero) { }
+		explicit StandingStack(__int64 const capacity) : _storage(capacity), _count(_0) { }
 
 		__int64 GetCount() const { return _count; }
 		T GetAt(__int64 const offset) const { return _storage[offset]; }
@@ -219,7 +219,7 @@ namespace Core
 		}
 		AscendingEnumerator GetAscendingEnumerator() const
 		{
-			return GetAscendingEnumerator(IntegerZero, _count);
+			return GetAscendingEnumerator(_0, _count);
 		}
 		DescendingEnumerator GetDescendingEnumerator(__int64 const offset, __int64 const edge) const
 		{
@@ -227,13 +227,13 @@ namespace Core
 		}
 		DescendingEnumerator GetDescendingEnumerator() const
 		{
-			return GetDescendingEnumerator(_count - IntegerOne, -IntegerOne);
+			return GetDescendingEnumerator(_count - _1, -_1);
 		}
 		bool TryAdd(T const value)
 		{
 			__int64 offset;
 
-			if ((offset = _count++) != IntegerMaxUnsigned)
+			if ((offset = _count++) != _integerMaxUnsigned)
 			{
 				if (_count <= _storage.GetCapacity())
 				{
@@ -254,14 +254,14 @@ namespace Core
 		void Set(__int64 const offset, T const value) { _storage[offset] = value; }
 		bool TryRemove(T& value)
 		{
-			if (_count != IntegerZero)
+			if (_count != _0)
 			{
 				value = _storage[--_count];
 				return true;
 			}
 			return false;
 		}
-		void Clear() { _count = IntegerZero; }
+		void Clear() { _count = _0; }
 	};
 
 	template<typename T>
@@ -281,9 +281,9 @@ namespace Core
 		inline void IncreaseCapacity()
 		{
 			__int64	capacity = GetEnoughCapacity(_capacity, _count);
-			__int64	offset = (capacity - _capacity) >> IntegerOne;
+			__int64	offset = (capacity - _capacity) >> _1;
 			T* elements = new T[capacity];
-			if (_startOffset != IntegerZero)
+			if (_startOffset != _0)
 			{
 				memcpy(elements + offset, _elements + _startOffset, (_capacity - _startOffset) * sizeof(T));
 				memcpy(elements + offset + _capacity - _startOffset, _elements, (_startOffset) * sizeof(T));
@@ -294,7 +294,7 @@ namespace Core
 			_elements = elements;
 			_capacity = capacity;
 			_startOffset = offset;
-			_endOffset = offset + _count - IntegerOne;
+			_endOffset = offset + _count - _1;
 			return;
 		}
 
@@ -323,7 +323,7 @@ namespace Core
 			AscendingEnumerator& operator++()
 			{
 				if (++_offset == _stack._capacity)
-					_offset = 0x0I64;
+					_offset = _0;
 				return *this;
 			}
 		};
@@ -349,13 +349,13 @@ namespace Core
 			}
 			DescendingEnumerator& operator++()
 			{
-				if (--_offset < IntegerZero)
-					_offset = _stack._capacity - IntegerOne;
+				if (--_offset < _0)
+					_offset = _stack._capacity - _1;
 				return *this;
 			}
 		};
 
-		explicit LyingStack(__int64 const capacity) : _elements(new T[capacity]), _capacity(capacity), _startOffset(0x0I64), _endOffset(0x0I64), _count(0x0I64) { }
+		explicit LyingStack(__int64 const capacity) : _elements(new T[capacity]), _capacity(capacity), _startOffset(_0), _endOffset(_0), _count(_0) { }
 		~LyingStack() { delete _elements; }
 
 		__int64 GetCount() const { return _count; }
@@ -366,26 +366,26 @@ namespace Core
 		}
 		AscendingEnumerator GetAscendingEnumerator() const
 		{
-			return GetAscendingEnumerator(_count, IntegerZero);
+			return GetAscendingEnumerator(_count, _0);
 		}
 		DescendingEnumerator GetDescendingEnumerator(__int64 const edge, __int64 const offset) const
 		{
-			return DescendingEnumerator(*this, GetActualOffset(edge == -IntegerOne ? _capacity - IntegerOne : edge), GetActualOffset(offset));
+			return DescendingEnumerator(*this, GetActualOffset(edge == -_1 ? _capacity - _1 : edge), GetActualOffset(offset));
 		}
 		DescendingEnumerator GetDescendingEnumerator() const
 		{
-			return GetDescendingEnumerator(-IntegerOne, _count - IntegerOne);
+			return GetDescendingEnumerator(-_1, _count - _1);
 		}
 		bool TryAddLast(T const value)
 		{
-			if (_count++ != IntegerMaxUnsigned)
+			if (_count++ != _integerMaxUnsigned)
 			{
 				if (_count <= _capacity)
 				{
 				Setting:
 					_elements[_endOffset++] = value;
 					if (_endOffset == _capacity)
-						_endOffset = IntegerZero;
+						_endOffset = _0;
 					return true;
 				}
 				IncreaseCapacity();
@@ -396,18 +396,18 @@ namespace Core
 		}
 		bool TryAddFirst(T const value)
 		{
-			if (_count++ != IntegerMaxUnsigned)
+			if (_count++ != _integerMaxUnsigned)
 			{
 				if (_count <= _capacity)
 				{
 				CheckingOffset:
-					if (--_startOffset >= 0x0I64)
+					if (--_startOffset >= _0)
 					{
 					Setting:
 						_elements[_startOffset] = value;
 						return true;
 					}
-					_startOffset = _capacity - 0x1I64;
+					_startOffset = _capacity - _1;
 					goto Setting;
 				}
 				IncreaseCapacity();
@@ -419,15 +419,15 @@ namespace Core
 		void Set(__int64 const offset, T const value) { _elements[GetActualOffset(offset)] = value; }
 		bool TryRemoveLast(T& value)
 		{
-			if (_count-- != IntegerZero)
+			if (_count-- != _0)
 			{
-				if (--_endOffset >= IntegerZero)
+				if (--_endOffset >= _0)
 				{
 				Setting:
 					value = _elements[_endOffset];
 					return true;
 				}
-				_endOffset = _capacity - IntegerOne;
+				_endOffset = _capacity - _1;
 				goto Setting;
 			}
 			_count++;
@@ -435,12 +435,12 @@ namespace Core
 		}
 		bool TryRemoveFirst(T& value)
 		{
-			if (_count-- != 0x0I64)
+			if (_count-- != _0)
 			{
 				value = _elements[_startOffset];
 				if (++_startOffset != _capacity)
 					return true;
-				_startOffset = 0x0I64;
+				_startOffset = _0;
 				return true;
 			}
 			_count++;
@@ -448,8 +448,8 @@ namespace Core
 		}
 		void Clear()
 		{
-			_startOffset = _endOffset = _capacity >> 0x1I64;
-			_count = 0x0I64;
+			_startOffset = _endOffset = _capacity >> _1;
+			_count = _0;
 		}
 	};
 
@@ -478,26 +478,26 @@ namespace Core
 			delete _chainStartOffsets;
 			_chainStartOffsets = new __int64[capacity];
 			memset(_chainStartOffsets, 0x0I32, _storage.GetCapacity() * sizeof(__int64));
-			for (__int64 elementOffset = IntegerZero; elementOffset != previousCapacity; elementOffset++)
+			for (__int64 elementOffset = _0; elementOffset != previousCapacity; elementOffset++)
 			{
 				__int64 chainOffset = _storage[elementOffset]._simplifiedValue % capacity;
-				_storage[elementOffset]._nextElementOffset = _chainStartOffsets[chainOffset] - IntegerOne;
-				_chainStartOffsets[chainOffset] = elementOffset + IntegerOne;
+				_storage[elementOffset]._nextElementOffset = _chainStartOffsets[chainOffset] - _1;
+				_chainStartOffsets[chainOffset] = elementOffset + _1;
 			}
 		}
 		inline bool TryRemove(T const value, __int64 const simplifiedValue)
 		{
 			__int64 const chainOffset = simplifiedValue % _storage.GetCapacity();
-			for (__int64 elementOffset = _chainStartOffsets[chainOffset] - IntegerOne, lastElementOffset = -IntegerOne; elementOffset != -IntegerOne; lastElementOffset = elementOffset, elementOffset = _storage[elementOffset]._nextElementOffset)
+			for (__int64 elementOffset = _chainStartOffsets[chainOffset] - _1, lastElementOffset = -_1; elementOffset != -_1; lastElementOffset = elementOffset, elementOffset = _storage[elementOffset]._nextElementOffset)
 			{
 				if (value != _storage[elementOffset]._value)
 					continue;
-				if (lastElementOffset == -IntegerOne)
-					_chainStartOffsets[chainOffset] = _storage[elementOffset]._nextElementOffset + IntegerOne;
+				if (lastElementOffset == -_1)
+					_chainStartOffsets[chainOffset] = _storage[elementOffset]._nextElementOffset + _1;
 				else
 					_storage[lastElementOffset]._nextElementOffset = _storage[elementOffset]._nextElementOffset;
 				_storage[elementOffset]._nextElementOffset = _freeElementOffset;
-				_storage[elementOffset]._simplifiedValue = -IntegerOne;
+				_storage[elementOffset]._simplifiedValue = -_1;
 				_freeElementOffset = elementOffset;
 				_count--;
 				return true;
@@ -515,7 +515,7 @@ namespace Core
 			__int64 _offset;
 			bool _canContinue;
 
-			explicit Enumerator(Subset<T> const& subset) : _subset(subset), _offset(IntegerZero), _canContinue(true)
+			explicit Enumerator(Subset<T> const& subset) : _subset(subset), _offset(_0), _canContinue(true)
 			{
 				SetValid();
 			}
@@ -526,7 +526,7 @@ namespace Core
 				{
 					if (_offset != _subset._usedElementCount)
 					{
-						if (_subset._storage[_offset]._simplifiedValue != -IntegerOne)
+						if (_subset._storage[_offset]._simplifiedValue != -_1)
 							break;
 						continue;
 					}
@@ -553,13 +553,13 @@ namespace Core
 			}
 		};
 
-		Subset(__int64 const capacity) : _storage(capacity), _chainStartOffsets(new __int64[capacity]), _freeElementOffset(-IntegerOne), _usedElementCount(IntegerZero), _count(IntegerZero) { }
+		Subset(__int64 const capacity) : _storage(capacity), _chainStartOffsets(new __int64[capacity]), _freeElementOffset(-_1), _usedElementCount(_0), _count(_0) { }
 		~Subset() { delete _chainStartOffsets; }
 
 		__int64 GetCount() const { return _count; }
 		bool TryGetAddress(T const value, __int64& address) const
 		{
-			for (__int64 elementOffset = _chainStartOffsets[GetSimplifiedValue(value) % _storage.GetCapacity()] - IntegerOne; elementOffset != -IntegerOne; elementOffset = _storage[elementOffset]._nextElementOffset)
+			for (__int64 elementOffset = _chainStartOffsets[GetSimplifiedValue(value) % _storage.GetCapacity()] - _1; elementOffset != -_1; elementOffset = _storage[elementOffset]._nextElementOffset)
 			{
 				if (value != _storage[elementOffset]._value)
 					continue;
@@ -568,10 +568,10 @@ namespace Core
 			}
 			return false;
 		}
-		bool ContainsAt(__int64 const address) const { return address >= IntegerZero && address < _usedElementCount&& _storage[address]._simplifiedValue != -IntegerOne; }
+		bool ContainsAt(__int64 const address) const { return address >= _0 && address < _usedElementCount&& _storage[address]._simplifiedValue != -_1; }
 		bool TryGetAt(__int64 const address, T& value) const
 		{
-			if (address < IntegerZero || address >= _usedElementCount || _storage[address]._simplifiedValue == -IntegerZero)
+			if (address < _0 || address >= _usedElementCount || _storage[address]._simplifiedValue == -_1)
 				return false;
 			value = _storage[address]._value;
 			return true;
@@ -579,7 +579,7 @@ namespace Core
 		Enumerator GetEnumerator() const { return Enumerator(*this); }
 		bool TryAdd(T const value, __int64& address)
 		{
-			if (_count++ == IntegerMaxUnsigned)
+			if (_count++ == _integerMaxUnsigned)
 			{
 				_count--;
 				return false;
@@ -589,24 +589,24 @@ namespace Core
 			__int64	const simplifiedValue = GetSimplifiedValue(value);
 			__int64 const chainOffset = simplifiedValue % _storage.GetCapacity();
 			__int64 elementOffset;
-			for (elementOffset = _chainStartOffsets[chainOffset] - IntegerOne; elementOffset != -IntegerOne; elementOffset = _storage[elementOffset]._nextElementOffset)
+			for (elementOffset = _chainStartOffsets[chainOffset] - _1; elementOffset != -_1; elementOffset = _storage[elementOffset]._nextElementOffset)
 			{
 				if (value != _storage[elementOffset]._value)
 					continue;
 				_count--;
 				return false;
 			}
-			if (_freeElementOffset != -IntegerOne)
+			if (_freeElementOffset != -_1)
 			{
 				elementOffset = _freeElementOffset;
 				_freeElementOffset = _storage[elementOffset]._nextElementOffset;
 			}
 			else
 				elementOffset = _usedElementCount++;
-			_storage[elementOffset]._nextElementOffset = _chainStartOffsets[chainOffset] - IntegerOne;
+			_storage[elementOffset]._nextElementOffset = _chainStartOffsets[chainOffset] - _1;
 			_storage[elementOffset]._simplifiedValue = simplifiedValue;
 			_storage[elementOffset]._value = value;
-			_chainStartOffsets[chainOffset] = elementOffset + IntegerOne;
+			_chainStartOffsets[chainOffset] = elementOffset + _1;
 			address = elementOffset;
 			return true;
 		}
@@ -617,7 +617,7 @@ namespace Core
 		bool TryRemoveAt(__int64 const address, T& value)
 		{
 			__int64 const simplifiedValue = _storage[address]._simplifiedValue;
-			if (address < IntegerZero || address >= _usedElementCount || simplifiedValue == -IntegerOne)
+			if (address < _0 || address >= _usedElementCount || simplifiedValue == -_1)
 				return false;
 			value = _storage[address]._value;
 			return TryRemove(value, simplifiedValue);
@@ -625,9 +625,9 @@ namespace Core
 		void Clear()
 		{
 			memset(_chainStartOffsets, 0x0I32, _storage.GetCapacity() * sizeof(__int64));
-			_freeElementOffset = -IntegerOne;
-			_usedElementCount = IntegerZero;
-			_count = IntegerZero;
+			_freeElementOffset = -_1;
+			_usedElementCount = _0;
+			_count = _0;
 		}
 	};
 
@@ -685,26 +685,26 @@ namespace Core
 			delete _chainStartOffsets;
 			_chainStartOffsets = new __int64[capacity];
 			memset(_chainStartOffsets, 0x0I32, _storage.GetCapacity() * sizeof(__int64));
-			for (__int64 elementOffset = IntegerZero; elementOffset != previousCapacity; elementOffset++)
+			for (__int64 elementOffset = _0; elementOffset != previousCapacity; elementOffset++)
 			{
 				__int64 chainOffset = _storage[elementOffset]._simplifiedInput % capacity;
-				_storage[elementOffset]._nextElementOffset = _chainStartOffsets[chainOffset] - IntegerOne;
-				_chainStartOffsets[chainOffset] = elementOffset + IntegerOne;
+				_storage[elementOffset]._nextElementOffset = _chainStartOffsets[chainOffset] - _1;
+				_chainStartOffsets[chainOffset] = elementOffset + _1;
 			}
 		}
 		bool TryRemove(TInput const input, __int64 const _simplifiedValue)
 		{
 			__int64 const chainOffset = _simplifiedValue % _storage.GetCapacity();
-			for (__int64 elementOffset = _chainStartOffsets[chainOffset] - IntegerOne, lastElementOffset = -IntegerOne; elementOffset != -IntegerOne; lastElementOffset = elementOffset, elementOffset = _storage[elementOffset]._nextElementOffset)
+			for (__int64 elementOffset = _chainStartOffsets[chainOffset] - _1, lastElementOffset = -_1; elementOffset != -_1; lastElementOffset = elementOffset, elementOffset = _storage[elementOffset]._nextElementOffset)
 			{
 				if (input != _storage[elementOffset]._relation.GetInput())
 					continue;
-				if (lastElementOffset == -IntegerOne)
-					_chainStartOffsets[chainOffset] = _storage[elementOffset]._nextElementOffset + IntegerOne;
+				if (lastElementOffset == -_1)
+					_chainStartOffsets[chainOffset] = _storage[elementOffset]._nextElementOffset + _1;
 				else
 					_storage[lastElementOffset]._nextElementOffset = _storage[elementOffset]._nextElementOffset;
 				_storage[elementOffset]._nextElementOffset = _freeElementOffset;
-				_storage[elementOffset]._simplifiedInput = -IntegerOne;
+				_storage[elementOffset]._simplifiedInput = -_1;
 				_freeElementOffset = elementOffset;
 				_count--;
 				return true;
@@ -722,7 +722,7 @@ namespace Core
 			__int64 _offset;
 			bool _canContinue;
 
-			explicit Enumerator(Surjection<TInput, TOutput> const& surjection) : _surjection(surjection), _offset(IntegerZero), _canContinue(true)
+			explicit Enumerator(Surjection<TInput, TOutput> const& surjection) : _surjection(surjection), _offset(_0), _canContinue(true)
 			{
 				SetValid();
 			}
@@ -733,7 +733,7 @@ namespace Core
 				{
 					if (_offset != _surjection._usedElementCount)
 					{
-						if (_surjection._storage[_offset]._simplifiedInput != -IntegerOne)
+						if (_surjection._storage[_offset]._simplifiedInput != -_1)
 							break;
 						continue;
 					}
@@ -760,13 +760,13 @@ namespace Core
 			}
 		};
 
-		Surjection(__int64 const capacity) : _storage(capacity), _chainStartOffsets(new __int64[capacity]), _freeElementOffset(-IntegerOne), _usedElementCount(IntegerZero), _count(IntegerZero) { }
+		Surjection(__int64 const capacity) : _storage(capacity), _chainStartOffsets(new __int64[capacity]), _freeElementOffset(-_1), _usedElementCount(_0), _count(_0) { }
 		~Surjection() { delete _chainStartOffsets; }
 
 		__int64 GetCount() const { return _count; }
 		bool TryGetAddress(TInput const input, __int64& address) const
 		{
-			for (__int64 elementOffset = _chainStartOffsets[GetSimplifiedValue(input) % _storage.GetCapacity()] - 0x1I64; elementOffset != -0x1I64; elementOffset = _storage[elementOffset]._nextElementOffset)
+			for (__int64 elementOffset = _chainStartOffsets[GetSimplifiedValue(input) % _storage.GetCapacity()] - _1; elementOffset != -_1; elementOffset = _storage[elementOffset]._nextElementOffset)
 			{
 				if (input != _storage[elementOffset]._relation.GetInput())
 					continue;
@@ -775,10 +775,10 @@ namespace Core
 			}
 			return false;
 		}
-		bool ContainsAt(__int64 const address) const { return address >= IntegerZero && address < _usedElementCount&& _storage[address]._simplifiedInput != -IntegerOne; }
+		bool ContainsAt(__int64 const address) const { return address >= _0 && address < _usedElementCount&& _storage[address]._simplifiedInput != -_1; }
 		bool TryGetAt(__int64 const address, Relation<TInput, TOutput>& relation) const
 		{
-			if (address < IntegerZero || address >= _usedElementCount || _storage[address]._simplifiedInput == -IntegerOne)
+			if (address < _0 || address >= _usedElementCount || _storage[address]._simplifiedInput == -_1)
 				return false;
 			relation = _storage[address]._relation;
 			return true;
@@ -786,7 +786,7 @@ namespace Core
 		Enumerator GetEnumerator() const { return Enumerator(*this); }
 		bool TryAdd(Relation<TInput, TOutput> const relation, __int64& address)
 		{
-			if (_count++ == IntegerMaxUnsigned)
+			if (_count++ == _integerMaxUnsigned)
 			{
 				_count--;
 				return false;
@@ -796,24 +796,24 @@ namespace Core
 			__int64 const simplifiedInput = GetSimplifiedValue(relation.GetInput());
 			__int64 const chainOffset = simplifiedInput % _storage.GetCapacity();
 			__int64 elementOffset;
-			for (elementOffset = _chainStartOffsets[chainOffset] - IntegerOne; elementOffset != -IntegerOne; elementOffset = _storage[elementOffset]._nextElementOffset)
+			for (elementOffset = _chainStartOffsets[chainOffset] - _1; elementOffset != -_1; elementOffset = _storage[elementOffset]._nextElementOffset)
 			{
 				if (relation.GetInput() != _storage[elementOffset]._relation.GetInput())
 					continue;
 				_count--;
 				return false;
 			}
-			if (_freeElementOffset != -IntegerOne)
+			if (_freeElementOffset != -_1)
 			{
 				elementOffset = _freeElementOffset;
 				_freeElementOffset = _storage[elementOffset]._nextElementOffset;
 			}
 			else
 				elementOffset = _usedElementCount++;
-			_storage[elementOffset]._nextElementOffset = _chainStartOffsets[chainOffset] - IntegerOne;
+			_storage[elementOffset]._nextElementOffset = _chainStartOffsets[chainOffset] - _1;
 			_storage[elementOffset]._simplifiedInput = simplifiedInput;
 			_storage[elementOffset]._relation = relation;
-			_chainStartOffsets[chainOffset] = elementOffset + IntegerOne;
+			_chainStartOffsets[chainOffset] = elementOffset + _1;
 			address = elementOffset;
 			return true;
 		}
@@ -824,7 +824,7 @@ namespace Core
 		bool TryRemoveAt(__int64 const address, Relation<TInput, TOutput>& relation)
 		{
 			__int64 const simplifiedInput = _storage[address]._simplifiedInput;
-			if (address < IntegerZero || address >= _usedElementCount || simplifiedInput == -IntegerOne)
+			if (address < _0 || address >= _usedElementCount || simplifiedInput == -_1)
 				return false;
 			relation = _storage[address]._relation;
 			return TryRemove(relation.GetInput(), simplifiedInput);
@@ -832,9 +832,9 @@ namespace Core
 		void Clear()
 		{
 			memset(_chainStartOffsets, 0x0I32, _storage.GetCapacity() * sizeof(__int64));
-			_freeElementOffset = -IntegerOne;
-			_usedElementCount = IntegerZero;
-			_count = IntegerZero;
+			_freeElementOffset = -_1;
+			_usedElementCount = _0;
+			_count = _0;
 		}
 	};
 }

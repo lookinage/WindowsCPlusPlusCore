@@ -4,15 +4,13 @@ namespace Core
 {
 	__int64 GetEnoughCapacity(__int64 const capacity, __int64 const count)
 	{
-		__int64 result;
-
-		result = capacity == IntegerZero ? IntegerOne : capacity;
+		__int64 result = capacity == _0 ? _1 : capacity;
 		do
 		{
 			result += result;
-			if (result < IntegerZero)
+			if (result < _0)
 			{
-				result = IntegerMaxUnsigned;
+				result = _integerMaxUnsigned;
 				break;
 			}
 		}
