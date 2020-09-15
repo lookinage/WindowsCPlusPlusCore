@@ -699,7 +699,7 @@ namespace Core
 				_chainStartOffsets[chainOffset] = elementOffset + 0x1I64;
 			}
 		}
-		bool TryRemove(TInput const input, __int64 const _simplifiedValue)
+		inline bool TryRemove(TInput const input, __int64 const _simplifiedValue)
 		{
 			__int64 const chainOffset = _simplifiedValue % _storage.GetCapacity();
 			for (__int64 elementOffset = _chainStartOffsets[chainOffset] - 0x1I64, lastElementOffset = -0x1I64; elementOffset != -0x1I64; lastElementOffset = elementOffset, elementOffset = _storage[elementOffset]._nextElementOffset)
