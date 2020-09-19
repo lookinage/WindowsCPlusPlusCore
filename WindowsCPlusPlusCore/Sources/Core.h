@@ -13,16 +13,16 @@ namespace Core
 	__int64 GetSimplifiedValue(T const& reference)
 	{
 		__int8 const* pointer = (__int8*)&reference;
-		__int64 result = *(__int64 const*)pointer;
 		auto sizes = std::lldiv(sizeof(T), sizeof(__int64));
 		sizes.quot *= sizeof(__int64);
-		for (__int64 offset = sizeof(__int64); offset != sizes.quot; offset += sizeof(__int64))
+		__int64 result = 0x0I64;
+		for (__int64 offset = 0x0I64; offset != sizes.quot; offset += sizeof(__int64))
 			result ^= *(__int64*)(pointer + offset);
 		if (sizes.rem == 0x0I64)
 			return result;
 		if (sizes.rem == sizeof(__int32) + sizeof(__int16) + sizeof(__int8))
 		{
-			pointer += sizes.quot - 0x1I64;
+			pointer += sizes.quot;
 			*(__int32*)&result ^= *(__int32*)pointer;
 			*(__int16*)((__int8*)&result + sizeof(__int32)) ^= *(__int16*)(pointer + sizeof(__int32));
 			*(__int8*)((__int8*)&result + sizeof(__int32) + sizeof(__int16)) ^= *(__int8*)(pointer + sizeof(__int32) + sizeof(__int16));
@@ -30,40 +30,37 @@ namespace Core
 		}
 		if (sizes.rem == sizeof(__int32) + sizeof(__int16))
 		{
-			pointer += sizes.quot - 0x1I64;
+			pointer += sizes.quot;
 			*(__int32*)&result ^= *(__int32*)pointer;
 			*(__int16*)((__int8*)&result + sizeof(__int32)) ^= *(__int16*)(pointer + sizeof(__int32));
 			return result;
 		}
 		if (sizes.rem == sizeof(__int32) + sizeof(__int8))
 		{
-			pointer += sizes.quot - 0x1I64;
+			pointer += sizes.quot;
 			*(__int32*)&result ^= *(__int32*)pointer;
 			*(__int8*)((__int8*)&result + sizeof(__int32)) ^= *(__int8*)(pointer + sizeof(__int32));
 			return result;
 		}
 		if (sizes.rem == sizeof(__int32))
 		{
-			*(__int32*)&result ^= *(__int32*)(pointer + sizes.quot - 0x1I64);
+			*(__int32*)&result ^= *(__int32*)(pointer + sizes.quot);
 			return result;
 		}
 		if (sizes.rem == sizeof(__int16) + sizeof(__int8))
 		{
-			pointer += sizes.quot - 0x1I64;
+			pointer += sizes.quot;
 			*(__int16*)&result ^= *(__int16*)pointer;
 			*(__int8*)((__int8*)&result + sizeof(__int16)) ^= *(__int8*)(pointer + sizeof(__int16));
 			return result;
 		}
 		if (sizes.rem == sizeof(__int16))
 		{
-			*(__int16*)&result ^= *(__int16*)(pointer + sizes.quot - 0x1I64);
+			*(__int16*)&result ^= *(__int16*)(pointer + sizes.quot);
 			return result;
 		}
-		if (sizes.rem == sizeof(__int8))
-		{
-			*(__int8*)&result ^= *(__int8*)(pointer + sizes.quot - 0x1I64);
-			return result;
-		}
+		*(__int8*)&result ^= *(__int8*)(pointer + sizes.quot);
+		return result;
 	}
 	__int64 GetEnoughCapacity(__int64 const capacity, __int64 const count);
 
