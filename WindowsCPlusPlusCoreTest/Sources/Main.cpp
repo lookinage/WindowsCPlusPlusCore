@@ -254,42 +254,115 @@ __int64 GetSimplifiedValueTest()
 	};
 
 	if (GetSimplifiedValue(SixteenByteSizeValue(0x123456789ABCDEF7I64, 0x7FEDCBA987654321I64)) != 0x6DD99DD11DD99DD6I64)
-		return -0x1I64;
+		return 0x1I64;
 	if (GetSimplifiedValue(FifteenByteSizeValue(0x123456789ABCDEF7I64, 0x7FEDCBA987654321I64)) != 0x12D99DD11DD99DD6I64)
-		return -0x1I64;
+		return 0x2I64;
 	if (GetSimplifiedValue(FourteenByteSizeValue(0x123456789ABCDEF7I64, 0x7FEDCBA987654321I64)) != 0x12349DD11DD99DD6I64)
-		return -0x1I64;
+		return 0x3I64;
 	if (GetSimplifiedValue(ThirteenByteSizeValue(0x123456789ABCDEF7I64, 0x7FEDCBA987654321I64)) != 0x123456D11DD99DD6I64)
-		return -0x1I64;
+		return 0x4I64;
 	if (GetSimplifiedValue(TwelveByteSizeValue(0x123456789ABCDEF7I64, 0x7FEDCBA987654321I64)) != 0x123456781DD99DD6I64)
-		return -0x1I64;
+		return 0x5I64;
 	if (GetSimplifiedValue(ElevenByteSizeValue(0x123456789ABCDEF7I64, 0x7FEDCBA987654321I64)) != 0x123456789AD99DD6I64)
-		return -0x1I64;
+		return 0x6I64;
 	if (GetSimplifiedValue(TenByteSizeValue(0x123456789ABCDEF7I64, 0x7FEDCBA987654321I64)) != 0x123456789ABC9DD6I64)
-		return -0x1I64;
+		return 0x7I64;
 	if (GetSimplifiedValue(NineByteSizeValue(0x123456789ABCDEF7I64, 0x7FEDCBA987654321I64)) != 0x123456789ABCDED6I64)
-		return -0x1I64;
+		return 0x8I64;
 	if (GetSimplifiedValue(EightByteSizeValue(0x123456789ABCDEF7I64)) != 0x123456789ABCDEF7I64)
-		return -0x1I64;
+		return 0x9I64;
 	if (GetSimplifiedValue(SevenByteSizeValue(0x123456789ABCDEF7I64)) != 0x3456789ABCDEF7I64)
-		return -0x1I64;
+		return 0xAI64;
 	if (GetSimplifiedValue(SixByteSizeValue(0x123456789ABCDEF7I64)) != 0x56789ABCDEF7I64)
-		return -0x1I64;
+		return 0xBI64;
 	if (GetSimplifiedValue(FiveByteSizeValue(0x123456789ABCDEF7I64)) != 0x789ABCDEF7I64)
-		return -0x1I64;
+		return 0xCI64;
 	if (GetSimplifiedValue(FourByteSizeValue(0x123456789ABCDEF7I64)) != 0x9ABCDEF7I64)
-		return -0x1I64;
+		return 0xDI64;
 	if (GetSimplifiedValue(ThreeByteSizeValue(0x123456789ABCDEF7I64)) != 0xBCDEF7I64)
-		return -0x1I64;
+		return 0xEI64;
 	if (GetSimplifiedValue(TwoByteSizeValue(0x123456789ABCDEF7I64)) != 0xDEF7I64)
-		return -0x1I64;
+		return 0xFI64;
 	if (GetSimplifiedValue(OneByteSizeValue(0x123456789ABCDEF7I64)) != 0xF7I64)
-		return -0x1I64;
-	return -0x0I64;
+		return 0x10I64;
+	return 0x0I64;
 }
+__int64 StaticStorageTest()
+{
+	__int64 constexpr testCount = 0x100I64;
 
+	class Data
+	{
+		StaticStorage<__int64, testCount>* _storage;
+
+	public:
+
+		Data() : _storage(new StaticStorage<__int64, testCount>) { }
+		~Data()
+		{
+			delete _storage;
+		}
+		StaticStorage<__int64, testCount>& GetStorage()
+		{
+			return *_storage;
+		}
+	};
+	Data data = { };
+	for (__int64 offset = 0x0I64; offset != testCount; offset++)
+	{
+		if (data.GetStorage().GetCapacity() != testCount)
+			return _integerMaxUnsigned;
+		data.GetStorage()[offset] = offset;
+		for (__int64 checkingOffset = 0x0I64; checkingOffset <= offset; checkingOffset++)
+			if (data.GetStorage()[checkingOffset] != checkingOffset)
+				return 0x1I64 + checkingOffset;
+	}
+	return 0x0I64;
+}
+__int64 DynamicStorageTest()
+{
+	__int64 constexpr testCount = 0x100I64;
+
+	class Data
+	{
+		DynamicStorage<__int64>* _storage;
+
+	public:
+
+		Data() : _storage(new DynamicStorage<__int64>(0x0I64)) { }
+		~Data()
+		{
+			delete _storage;
+		}
+		DynamicStorage<__int64>& GetStorage()
+		{
+			return *_storage;
+		}
+	};
+
+	Data data = { };
+	if (data.GetStorage().GetCapacity() != 0x0I64)
+		return _integerMaxUnsigned;
+	for (__int64 offset = 0x0I64; offset != testCount; offset++)
+	{
+		__int64 const enoughCapacity = GetEnoughCapacity(data.GetStorage().GetCapacity(), offset + 0x1I64);
+		if (enoughCapacity != data.GetStorage().GetCapacity())
+			data.GetStorage().SetCapacity(enoughCapacity);
+		if (data.GetStorage().GetCapacity() != enoughCapacity)
+			return _integerMaxUnsigned - 0x1I64;
+		data.GetStorage()[offset] = offset;
+		for (__int64 checkingOffset = 0x0I64; checkingOffset != offset; checkingOffset++)
+			if (data.GetStorage()[checkingOffset] != checkingOffset)
+				return 0x1I64 + checkingOffset;
+	}
+	return 0x0I64;
+}
 __int32 main()
 {
 	if (GetSimplifiedValueTest() != 0x0I64)
-		return -0x1I64;
+		return 0x1I64;
+	if (StaticStorageTest() != 0x0I64)
+		return 0x1I64;
+	if (DynamicStorageTest() != 0x0I64)
+		return 0x1I64;
 }

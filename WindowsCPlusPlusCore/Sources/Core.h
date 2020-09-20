@@ -65,7 +65,7 @@ namespace Core
 	__int64 GetEnoughCapacity(__int64 const capacity, __int64 const count);
 
 	template<typename T, __int64 Capacity>
-	struct StaticStorage
+	class StaticStorage
 	{
 		T _elements[Capacity];
 
@@ -107,7 +107,7 @@ namespace Core
 
 	public:
 
-		explicit DynamicStorage(const __int64 capacity) : _capacity(capacity), _elements(new T[capacity]) { }
+		explicit DynamicStorage(__int64 const capacity) : _capacity(capacity), _elements(new T[capacity]) { }
 		~DynamicStorage()
 		{
 			delete _elements;
