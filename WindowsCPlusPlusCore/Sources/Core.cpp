@@ -17,6 +17,11 @@ namespace Core
 		return result;
 	}
 
+	thread_local bool PseudoRandomManager::_initialized;
+	thread_local __int32 PseudoRandomManager::_seeds[0x38I64];
+	thread_local __int32 PseudoRandomManager::_inext;
+	thread_local __int32 PseudoRandomManager::_inextp;
+
 	void PseudoRandomManager::Initialize()
 	{
 		__int32 seed = (__int32)std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count();

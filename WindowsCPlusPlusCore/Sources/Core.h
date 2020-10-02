@@ -118,7 +118,7 @@ namespace Core
 		{
 			return _capacity;
 		}
-		void SetCapacity(__int64 const capacity)
+		void SetCapacity(unsigned __int64 const capacity)
 		{
 			T* elements = new T[capacity];
 			memcpy(elements, _elementsPointer, _capacity * sizeof(T));
