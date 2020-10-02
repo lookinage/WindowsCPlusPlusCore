@@ -2,6 +2,7 @@
 
 #include <cstdlib>
 #include <string>
+#include <chrono>
 
 namespace Core
 {
@@ -67,11 +68,11 @@ namespace Core
 	template<typename T, __int64 Capacity>
 	class StaticStorage
 	{
-		T _elements[Capacity];
+		T _elementsPointer[Capacity];
 
 	public:
 
-		StaticStorage() : _elements() { }
+		StaticStorage() : _elementsPointer() { }
 
 		const __int64 GetCapacity() const
 		{
@@ -80,7 +81,7 @@ namespace Core
 
 		T& operator[](__int64 const offset)
 		{
-			return _elements[offset];
+			return _elementsPointer[offset];
 		}
 	};
 	template<typename T, __int64 Capacity>
@@ -103,14 +104,14 @@ namespace Core
 		friend bool operator!=(DynamicStorage<T> const& left, DynamicStorage<T> const& right);
 
 		__int64 _capacity;
-		T* _elements;
+		T* _elementsPointer;
 
 	public:
 
-		explicit DynamicStorage(__int64 const capacity) : _capacity(capacity), _elements(new T[capacity]) { }
+		explicit DynamicStorage(__int64 const capacity) : _capacity(capacity), _elementsPointer(new T[capacity]) { }
 		~DynamicStorage()
 		{
-			delete _elements;
+			delete _elementsPointer;
 		}
 
 		__int64 GetCapacity() const
@@ -120,27 +121,55 @@ namespace Core
 		void SetCapacity(__int64 const capacity)
 		{
 			T* elements = new T[capacity];
-			memcpy(elements, _elements, _capacity * sizeof(T));
+			memcpy(elements, _elementsPointer, _capacity * sizeof(T));
 			_capacity = capacity;
-			delete _elements;
-			_elements = elements;
+			delete _elementsPointer;
+			_elementsPointer = elements;
 			return;
 		}
 
 		T& operator[](__int64 const offset) const
 		{
-			return _elements[offset];
+			return _elementsPointer[offset];
 		}
 	};
 	template<typename T>
 	bool operator==(DynamicStorage<T> const& left, DynamicStorage<T> const& right)
 	{
-		return left._elements == right._elements;
+		return left._elementsPointer == right._elementsPointer;
 	};
 	template<typename T>
 	bool operator!=(DynamicStorage<T> const& left, DynamicStorage<T> const& right)
 	{
-		return left._elements != right._elements;
+		return left._elementsPointer != right._elementsPointer;
+	};
+
+	class PseudoRandomManager
+	{
+		static thread_local bool _initialized;
+		static thread_local __int32 _seeds[0x38I64];
+		static thread_local __int32 _inext;
+		static thread_local __int32 _inextp;
+
+		static void Initialize();
+
+	public:
+
+		static __int32 GetNonPositiveInt32Internal(__int32 min);
+		static __int32 GetNonPositiveInt32Internal(__int32 min, __int32 max);
+		static __int32 GetInt32();
+		static __int32 GetInt32(__int32 min, __int32 max);
+		static __int32 GetNonPositiveInt32();
+		static __int32 GetNonPositiveInt32(__int32 min);
+		static __int32 GetNonPositiveInt32(__int32 min, __int32 max);
+		static __int32 GetNonNegativeInt32();
+		static __int32 GetNonNegativeInt32(__int32 max);
+		static __int32 GetNonNegativeInt32(__int32 min, __int32 max);
+		static __int32 GetInt32Remainder(__int32 divider);
+		static float GetSingleFloat();
+		static float GetNonPositiveSingleFloat();
+		static float GetNonNegativeSingleFloat();
+		static void GetBytes(__int8* buffer, __int32 index, __int32 count);
 	};
 
 	template<typename T>
@@ -262,7 +291,7 @@ namespace Core
 	template<typename T>
 	class LyingStack
 	{
-		T* _elements;
+		T* _elementsPointer;
 		__int64 _capacity;
 		__int64 _startOffset;
 		__int64 _endOffset;
@@ -280,13 +309,13 @@ namespace Core
 			T* elements = new T[capacity];
 			if (_startOffset != 0x0I64)
 			{
-				memcpy(elements + offset, _elements + _startOffset, (_capacity - _startOffset) * sizeof(T));
-				memcpy(elements + offset + _capacity - _startOffset, _elements, (_startOffset) * sizeof(T));
+				memcpy(elements + offset, _elementsPointer + _startOffset, (_capacity - _startOffset) * sizeof(T));
+				memcpy(elements + offset + _capacity - _startOffset, _elementsPointer, (_startOffset) * sizeof(T));
 			}
 			else
-				memcpy(elements + offset, _elements, _capacity * sizeof(T));
-			delete _elements;
-			_elements = elements;
+				memcpy(elements + offset, _elementsPointer, _capacity * sizeof(T));
+			delete _elementsPointer;
+			_elementsPointer = elements;
 			_capacity = capacity;
 			_startOffset = offset;
 			_endOffset = offset + _count - 0x1I64;
@@ -313,7 +342,7 @@ namespace Core
 			}
 			T const& operator*() const
 			{
-				return _stack._elements[_offset];
+				return _stack._elementsPointer[_offset];
 			}
 			AscendingEnumerator& operator++()
 			{
@@ -340,7 +369,7 @@ namespace Core
 			}
 			T const& operator*() const
 			{
-				return _stack._elements[_offset];
+				return _stack._elementsPointer[_offset];
 			}
 			DescendingEnumerator& operator++()
 			{
@@ -350,11 +379,11 @@ namespace Core
 			}
 		};
 
-		explicit LyingStack(__int64 const capacity) : _elements(new T[capacity]), _capacity(capacity), _startOffset(0x0I64), _endOffset(0x0I64), _count(0x0I64) { }
-		~LyingStack() { delete _elements; }
+		explicit LyingStack(__int64 const capacity) : _elementsPointer(new T[capacity]), _capacity(capacity), _startOffset(0x0I64), _endOffset(0x0I64), _count(0x0I64) { }
+		~LyingStack() { delete _elementsPointer; }
 
 		__int64 GetCount() const { return _count; }
-		T GetAt(__int64 const offset) const { return _elements[GetActualOffset(offset)]; }
+		T GetAt(__int64 const offset) const { return _elementsPointer[GetActualOffset(offset)]; }
 		AscendingEnumerator GetAscendingEnumerator(__int64 const edge, __int64 const offset) const
 		{
 			return AscendingEnumerator(*this, GetActualOffset(edge), GetActualOffset(offset));
@@ -378,7 +407,7 @@ namespace Core
 				if (_count <= _capacity)
 				{
 				Setting:
-					_elements[_endOffset++] = value;
+					_elementsPointer[_endOffset++] = value;
 					if (_endOffset == _capacity)
 						_endOffset = 0x0I64;
 					return true;
@@ -399,7 +428,7 @@ namespace Core
 					if (--_startOffset >= 0x0I64)
 					{
 					Setting:
-						_elements[_startOffset] = value;
+						_elementsPointer[_startOffset] = value;
 						return true;
 					}
 					_startOffset = _capacity - 0x1I64;
@@ -411,7 +440,7 @@ namespace Core
 			_count--;
 			return false;
 		}
-		void Set(__int64 const offset, T const value) { _elements[GetActualOffset(offset)] = value; }
+		void Set(__int64 const offset, T const value) { _elementsPointer[GetActualOffset(offset)] = value; }
 		bool TryRemoveLast(T& value)
 		{
 			if (_count-- != 0x0I64)
@@ -419,7 +448,7 @@ namespace Core
 				if (--_endOffset >= 0x0I64)
 				{
 				Setting:
-					value = _elements[_endOffset];
+					value = _elementsPointer[_endOffset];
 					return true;
 				}
 				_endOffset = _capacity - 0x1I64;
@@ -432,7 +461,7 @@ namespace Core
 		{
 			if (_count-- != 0x0I64)
 			{
-				value = _elements[_startOffset];
+				value = _elementsPointer[_startOffset];
 				if (++_startOffset != _capacity)
 					return true;
 				_startOffset = 0x0I64;

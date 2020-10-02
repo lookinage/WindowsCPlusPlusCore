@@ -2,7 +2,7 @@
 
 using namespace Core;
 
-__int64 GetSimplifiedValueTest()
+__int64 const GetSimplifiedValueTest()
 {
 	class SixteenByteSizeValue
 	{
@@ -287,7 +287,7 @@ __int64 GetSimplifiedValueTest()
 		return 0x10I64;
 	return 0x0I64;
 }
-__int64 StaticStorageTest()
+__int64 const StaticStorageTest()
 {
 	__int64 constexpr testCount = 0x100I64;
 
@@ -319,7 +319,7 @@ __int64 StaticStorageTest()
 	}
 	return 0x0I64;
 }
-__int64 DynamicStorageTest()
+__int64 const DynamicStorageTest()
 {
 	__int64 constexpr testCount = 0x100I64;
 
