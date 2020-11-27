@@ -146,30 +146,26 @@ namespace Core
 
 	class PseudoRandomManager
 	{
-		static thread_local bool _initialized;
-		static thread_local __int32 _seeds[0x38I64];
-		static thread_local __int32 _inext;
-		static thread_local __int32 _inextp;
+		static thread_local __int64 _value;
 
-		static void Initialize();
+		static __int64 GetNonPositiveInt64Internal(__int64 min);
+		static __int64 GetNonPositiveInt64Internal(__int64 min, __int64 max);
 
 	public:
 
-		static __int32 GetNonPositiveInt32Internal(__int32 min);
-		static __int32 GetNonPositiveInt32Internal(__int32 min, __int32 max);
-		static __int32 GetInt32();
-		static __int32 GetInt32(__int32 min, __int32 max);
-		static __int32 GetNonPositiveInt32();
-		static __int32 GetNonPositiveInt32(__int32 min);
-		static __int32 GetNonPositiveInt32(__int32 min, __int32 max);
-		static __int32 GetNonNegativeInt32();
-		static __int32 GetNonNegativeInt32(__int32 max);
-		static __int32 GetNonNegativeInt32(__int32 min, __int32 max);
-		static __int32 GetInt32Remainder(__int32 divider);
+		static __int64 GetInt64();
+		static __int64 GetInt64(__int64 min, __int64 max);
+		static __int64 GetNonPositiveInt64();
+		static __int64 GetNonPositiveInt64(__int64 min);
+		static __int64 GetNonPositiveInt64(__int64 min, __int64 max);
+		static __int64 GetNonNegativeInt64();
+		static __int64 GetNonNegativeInt64(__int64 max);
+		static __int64 GetNonNegativeInt64(__int64 min, __int64 max);
+		static __int64 GetInt64Remainder(__int64 divider);
 		static float GetSingleFloat();
 		static float GetNonPositiveSingleFloat();
 		static float GetNonNegativeSingleFloat();
-		static void GetBytes(__int8* buffer, __int32 index, __int32 count);
+		static void GetBytes(__int8* buffer, __int64 index, __int64 count);
 	};
 
 	template<typename T>

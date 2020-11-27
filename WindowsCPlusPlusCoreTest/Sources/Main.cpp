@@ -365,4 +365,37 @@ __int32 main()
 		return 0x1I64;
 	if (DynamicStorageTest() != 0x0I64)
 		return 0x1I64;
+	constexpr __int64 count = 0x10000000I64;
+	__int64* stackPointer = new __int64[count];
+	__int64 firstValue = PseudoRandomManager::GetInt64Remainder(5I64);
+	__int64 writeOffset = 0x1I64;
+	__int64 readOffset = 0x1I64;
+	while (writeOffset != count)
+	{
+		__int64 value;
+		value = stackPointer[writeOffset++] = PseudoRandomManager::GetInt64Remainder(5I64);
+		for (; readOffset != writeOffset; readOffset++)
+		{
+			if (stackPointer[readOffset] != firstValue)
+				continue;
+			__int64 roof = readOffset + readOffset;
+			if (roof > count)
+				throw new std::exception();
+			while (writeOffset != roof)
+				value = stackPointer[writeOffset++] = PseudoRandomManager::GetInt64Remainder(5I64);
+			bool isLap = true;
+			for (__int64 leftOffset = 0x1I64, rightOffset = readOffset + 0x1I64; leftOffset != readOffset; leftOffset++, rightOffset++)
+			{
+				__int64 leftValue = stackPointer[leftOffset];
+				__int64 rightValue = stackPointer[rightOffset];
+				if (leftValue != rightValue)
+				{
+					isLap = false;
+					break;
+				}
+			}
+			if (isLap)
+				throw new std::exception();
+		}
+	}
 }
